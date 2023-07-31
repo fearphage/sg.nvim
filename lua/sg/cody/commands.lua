@@ -9,6 +9,7 @@ local util = require "sg.utils"
 local context = require "sg.cody.context"
 
 local CodyLayout = require "sg.components.cody_layout"
+local CodyFloatLayout = require "sg.components.cody_float_layout"
 local Message = require "sg.cody.message"
 local Speaker = require "sg.cody.speaker"
 local State = require "sg.cody.state"
@@ -46,6 +47,30 @@ end
 commands.ask = function(bufnr, start_line, end_line, message)
   local selection = vim.api.nvim_buf_get_lines(bufnr, start_line, end_line, false)
   local layout = CodyLayout.init {}
+
+  local contents = vim.tbl_flatten {
+    message,
+    "",
+    util.format_code(bufnr, selection),
+  }
+
+  layout:run(function()
+    -- context.add_context(bufnr, table.concat(selection, "\n"), layout.state)
+
+    layout.state:append(Message.init(Speaker.user, contents))
+    layout:mount()
+    layout:complete()
+  end)
+end
+
+--- Ask Cody about the selected code
+---@param bufnr number
+---@param start_line number
+---@param end_line number
+---@param message string
+commands.float = function(bufnr, start_line, end_line, message)
+  local selection = vim.api.nvim_buf_get_lines(bufnr, start_line, end_line, false)
+  local layout = CodyFloatLayout.init {}
 
   local contents = vim.tbl_flatten {
     message,
