@@ -56,7 +56,7 @@ jobs:
         run: |
           export PATH="${PWD}/_neovim/bin:${PATH}"
           export VIM="${PWD}/_neovim/share/nvim/runtime"
-          nvim -l build/init.lua
+          nvim -u scripts/init.lua -l build/init.lua
 
 
       - name: Run tests
